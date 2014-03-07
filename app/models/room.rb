@@ -14,6 +14,12 @@ class Room < ActiveRecord::Base
 	has_many :possible_actions, as: :actionable
   has_many :actions, through: :possible_actions
 
+  def description_with_items
+    desc = "#{description}"
+    self.items.each {|item| desc.concat("\n#{item.description}")}
+    desc
+  end
+
   def populate_actions
   	PossibleAction.create(actionable_id: id, actionable_type: :room, action_id: 1) if north_room
   	PossibleAction.create(actionable_id: id, actionable_type: :room, action_id: 3) if east_room

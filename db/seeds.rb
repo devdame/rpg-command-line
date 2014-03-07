@@ -23,6 +23,11 @@ def seed_room_actions
   end
 end
 
+def seed_items
+  Item.create(name: "key", long_name: "tarnished brass key", description: "A tarnished brass key lies on the ground.", possessable_id: 1, possessable_type: :Room)
+end
+
 seed_actions
 seed_maps
 seed_room_actions
+seed_items

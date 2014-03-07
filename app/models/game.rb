@@ -16,10 +16,18 @@ class Game < ActiveRecord::Base
   	view.greet_user
   	view.ask_for_name
   	name = gets.chomp
+    return view.goodbye if name == "quit" || name == "exit"
   	self.hero = Character.create(name: name, location_id: 1)
     view.lets_begin(hero.name)
-    get_prompt
-  	game_loop
+    answer = gets.chomp
+    return view.goodbye if answer == "quit" || answer == "exit"
+    if answer.downcase.include?("no") || answer.downcase == "n"
+      return view.seeya_coward(name)
+    else
+      view.hell_yeah(name)
+      get_prompt
+    	game_loop
+    end
   end
 
   def game_loop
@@ -38,16 +46,18 @@ class Game < ActiveRecord::Base
 
   def check_input_word
     case split_input[0]
-    when "help", "menu"
+    when "help", "menu", "options"
       self.prompt = help
     when "go", "walk", "move"
       direction_parser(split_input[1])
-    when "north", "n", "south", "s", "east", "e", "west", "w", "up", "down"
+    when "north", "n", "south", "s", "east", "e", "west", "w", "up", "u", "d", "down"
       direction_parser(split_input[0])
     when "quit", "exit"
       return "quit"
-    # when "inventory"
-    #   self.prompt = hero.get_inventory
+    when "inventory"
+      self.prompt = hero.get_inventory
+    when "look"
+      self.prompt = location.description_with_items
     # when "take", "grab"
     #   take(split_input.drop(1).join(' '))
     # when "pick"
@@ -69,46 +79,59 @@ class Game < ActiveRecord::Base
     end
   end
 
+
+  # case input
+  #   if "unlock chest"
+  #     if you're in the room with the chest
+  #       and you're holding the key
+  #       use key on chest
+
+
+  # case input
+  #   # unlock chest with purple key
+  #   # open door with hatchet
+  #   # put amulet on statue
+  #   # drop crystal into pool
+
+  #   action # unlock
+  #   sending_object # key
+  #   receiving_object # chest
+
+  #   if receiving_object = room.find_receiving_object
+  #     receiving_object.use(action, sending_object)
+  #   end
+  # end
+
+
+  # hit chest with key
+
+  # chest.use(hit, key)
+
+
+  # chest.use  ==>
+
+  # chest
+  # @useable_by: [key: ["unlock", "open"], wand: ["wave", "open"]]
+
+  # number of uses?
+
+
+
   def direction_parser(word)
-    case word
-    when "north", "n"
-      if hero.location.north_room
+    if (word == "north" or word == "n") and hero.location.north_room
         hero.location = hero.location.north_room
-      else
-        invalid_input
-      end
-    when "south", "s"
-      if hero.location.south_room
+    elsif (word == "south" or word == "s") and hero.location.south_room
         hero.location = hero.location.south_room
-      else
-        invalid_input
-      end
-    when "east", "e"
-      if hero.location.east_room
+    elsif (word == "east" or word == "e") and hero.location.east_room
         hero.location = hero.location.east_room
-      else
-        invalid_input
-      end
-    when "west", "w"
-      if hero.location.west_room
+    elsif (word == "west" or word == "w") and hero.location.west_room
         hero.location = hero.location.west_room
-      else
-        invalid_input
-      end
-    when "up"
-      if hero.location.up_room
+    elsif (word == "up" or word == "u") and hero.location.up_room
         hero.location = hero.location.up_room
-      else
-        invalid_input
-      end
-    when "down"
-      if hero.location.down_room
+    elsif (word == "down" or word == "d") and hero.location.down_room
         hero.location = hero.location.down_room
-      else
-        invalid_input
-      end
     else
-      invalid_input
+      invalid_direction
     end
   end
 
@@ -125,6 +148,10 @@ class Game < ActiveRecord::Base
 
   # end
 
+  def invalid_direction
+    self.prompt = "Looks like you can't go that way."
+  end
+
 
   def invalid_input
     self.prompt = "I'm sorry, I didn't understand you."
@@ -136,21 +163,21 @@ class Game < ActiveRecord::Base
       self.prompt = nil
     else
       get_location
-      current_prompt = location.description
+      current_prompt = location.description_with_items
       view.prompt(current_prompt)
     end
   end
 
-  # def get_possible_input
-  # 	possible_input = ["help", "menu", "inventory", "quit", "exit", "wait", "listen", "look", "look around", "go", "walk", "move"]
-  # 	# location.items.each do |item|
-  # 	# 	possible_input << item.possible_actions
-  # 	# end
-  #   # hero.inventory.each do |item|
-  #   #   possible_input << item.possible_actions
-  #   # end
-  # 	possible_input.flatten
-  # end
+  def get_possible_input
+    possible_actions = []
+  	location.items.each do |item|
+  		possible_input << item.possible_actions
+  	end
+    hero.items.each do |item|
+      possible_input << item.possible_actions
+    end
+  	possible_input.flatten
+  end
 
   def get_location
   	self.location = hero.location
@@ -163,7 +190,8 @@ Okay, adventurer. Time to go over some of the basic commands.
 
 ************************ MOVEMENT ************************
 
-go, walk, move (direction) ------------- 
+go, walk, move ------------------------- move on, BUT.....
+        ***  MUST BE FOLLOWED BY A DIRECTION:  **
 north, n ------------------------------- walk to the north
 south, s ------------------------------- walk to the south
 east, e -------------------------------- walk to the east
@@ -171,15 +199,14 @@ west, w -------------------------------- walk to the west
 
 ************************ GAMEPLAY ************************
 
-look
-listen
-wait
-inventory
+look ----------------------------------- look at your surroundings
+listen --------------------------------- listen to your surroundings
+inventory ------------------------------ lists your inventory
 
 ********************** BORING STUFF **********************
 
 quit, exit ----------------------------- quit the game
-help, menu ----------------------------- show these directions
+help, menu, options -------------------- show these directions
 
 STRING
   end
