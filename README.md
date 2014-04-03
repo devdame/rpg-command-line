@@ -1,6 +1,6 @@
 #A Text-Based RPG!
 
-This is a console-based, active-record-backed simple text-based role playing game.  It was my first try at figuring out how to deal with modeling interactive fiction in a program, and it's still very much so a work in progress.  This later was re-vamped as Dragon Blaster, but I hope to return to this when I have some time and make it the awesome game it deserves to be!
+This is a console-based, active-record-backed simple text-based role playing game.  It was my first try at figuring out how to deal with modeling interactive fiction in a program, and it's still very much so a work in progress.  This later was re-vamped as [Dragon Blaster](https://github.com/nealcpeters/Dragon_Blaster_Pro), but I hope to return to this when I have some time and make it the awesome game it deserves to be!
 
 ##How to Set it Up:
 
