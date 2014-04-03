@@ -7,3 +7,10 @@ class Item < ActiveRecord::Base
   #  it works if useable_by[item].include?(action)
   end
 end
+
+
+
+
+# "use key on door"
+# "use ____ on _______"
+# /use\s(.+)on\s(.+)/

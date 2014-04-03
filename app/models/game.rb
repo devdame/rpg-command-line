@@ -41,10 +41,10 @@ class Game < ActiveRecord::Base
   	# possible_input = get_possible_input
     self.split_input = input.split(' ')
     # invalid_input unless possible_input.include?(split_input[0])
-    check_input_word
+    check_first_word
   end
 
-  def check_input_word
+  def check_first_word
     case split_input[0]
     when "help", "menu", "options"
       self.prompt = help
@@ -104,11 +104,7 @@ class Game < ActiveRecord::Base
 
 
   # hit chest with key
-
   # chest.use(hit, key)
-
-
-  # chest.use  ==>
 
   # chest
   # @useable_by: [key: ["unlock", "open"], wand: ["wave", "open"]]
@@ -200,7 +196,6 @@ west, w -------------------------------- walk to the west
 ************************ GAMEPLAY ************************
 
 look ----------------------------------- look at your surroundings
-listen --------------------------------- listen to your surroundings
 inventory ------------------------------ lists your inventory
 
 ********************** BORING STUFF **********************
