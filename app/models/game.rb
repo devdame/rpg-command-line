@@ -208,6 +208,3 @@ STRING
 
 
 end
-
-game = Game.create
-game.run!
